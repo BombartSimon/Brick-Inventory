@@ -11,9 +11,9 @@
 		<div class="card-body">
 			<div class="card-content">
 				{% if set.imageUrl %}
-					<img src="{{ set.imageUrl }}" alt="{{ set.name }}" class="set-image-large">
+					<img src="{{ set.imageUrl }}" alt="{{ set.name }}" class="set-image" data-controller="image-viewer" data-action="click->image-viewer#open">
 				{% else %}
-					<div class="set-image-large image-placeholder" style="font-size: 3rem;">
+					<div class="set-image image-placeholder">
 						🧱
 					</div>
 				{% endif %}
@@ -122,7 +122,7 @@
 							<div class="card-body">
 								<div class="card-content">
 									{% if set_part.imageUrl %}
-										<img src="{{ set_part.imageUrl }}" alt="{{ set_part.partName }}" class="part-image">
+										<img src="{{ set_part.imageUrl }}" alt="{{ set_part.partName }}" class="part-image" data-controller="image-viewer" data-action="click->image-viewer#open">
 									{% else %}
 										<div class="part-image image-placeholder" style="font-size: 0.8rem;">
 											🧱
@@ -153,10 +153,5 @@
 				</div>
 			{% endif %}
 		</div>
-	</div>
-
-	<!-- Delete form -->
-	<div style="margin-top: 2rem; text-center;">
-		{{ include('set/_delete_form.html.twig') }}
 	</div>
 {% endblock %}

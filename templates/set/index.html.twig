@@ -67,13 +67,12 @@
 							<div class="card-body">
 								<div class="card-content">
 									{% if set.imageUrl %}
-										<img src="{{ set.imageUrl }}" alt="{{ set.name }}" class="set-image">
+										<img src="{{ set.imageUrl }}" alt="{{ set.name }}" class="set-image" data-controller="image-viewer" data-action="click->image-viewer#open">
 									{% else %}
 										<div class="set-image image-placeholder">
 											🧱
 										</div>
 									{% endif %}
-
 									<div style="flex: 1;">
 										<h3 class="mb-2">
 											<a href="{{ path('app_set_show', {'id': set.id}) }}" style="text-decoration: none; color: #2c3e50;">
