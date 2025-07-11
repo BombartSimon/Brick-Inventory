@@ -1,0 +1,164 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Dashboard - LEGO Inventory
+{% endblock %}
+
+{% block body %}
+	<div
+		data-controller="search" data-search-url-value="{{ path('app_set_index') }}">
+
+		<!-- Search bar -->
+		<div class="search-bar">
+			<input type="text" data-search-target="input" data-action="input->search#search" class="search-input" placeholder="Search for a set by name or number..." value="{{ search }}" autocomplete="off">
+		</div>
+
+		<!-- Content that will be updated -->
+		<div
+			data-search-target="container">
+
+			<!-- Quick statistics -->
+			<div class="stats-grid">
+				<div class="card" style="display: flex; justify-content: center; align-items: center;">
+					<div class="card-body text-center">
+						<div class="stat-number">{{ sets|length }}</div>
+						<div class="stat-label">Total Sets</div>
+					</div>
+				</div>
+				<div class="card" style="display: flex; justify-content: center; align-items: center;">
+					<div class="card-body text-center">
+						{% set totalPiecesInCollection = 0 %}
+						{% for set in sets %}
+							{% for part in set.setParts %}
+								{% set totalPiecesInCollection = totalPiecesInCollection + part.quantity %}
+							{% endfor %}
+						{% endfor %}
+						<div class="stat-number">{{ totalPiecesInCollection }}</div>
+						<div class="stat-label">Total Parts</div>
+					</div>
+				</div>
+				<div class="card">
+					<div class="card-body">
+						<h4 class="mb-2">
+							Import a Set
+						</h4>
+						<form method="GET" action="#" onsubmit="importSet(event)">
+							<input type="text" id="setNumInput" class="form-input mb-2" placeholder="Set number (e.g. 75192-1)" required>
+							<button type="submit" class="btn btn-primary" style="width: 100%;">
+								Import from Rebrickable
+							</button>
+						</form>
+					</div>
+				</div>
+			</div>
+
+			{% if search %}
+				<div class="mb-3">
+					<strong>{{ sets|length }}</strong>
+					result(s) for "<strong>{{ search }}</strong>"
+					<a href="{{ path('app_set_index') }}" class="btn btn-small btn-secondary">Clear</a>
+				</div>
+			{% endif %}
+
+			{% if sets|length > 0 %}
+				<!-- Vue en grille des sets -->
+				<div class="grid">
+					{% for set in sets %}
+						<div class="card">
+							<div class="card-body">
+								<div class="card-content">
+									{% if set.imageUrl %}
+										<img src="{{ set.imageUrl }}" alt="{{ set.name }}" class="set-image">
+									{% else %}
+										<div class="set-image image-placeholder">
+											🧱
+										</div>
+									{% endif %}
+
+									<div style="flex: 1;">
+										<h3 class="mb-2">
+											<a href="{{ path('app_set_show', {'id': set.id}) }}" style="text-decoration: none; color: #2c3e50;">
+												{{ set.name }}
+											</a>
+										</h3>
+
+										<div class="mb-2">
+											<span class="badge badge-primary">{{ set.setNum }}</span>
+											{% if set.year %}
+												<span class="badge">{{ set.year }}</span>
+											{% endif %}
+										</div>
+
+										<p class="text-muted mb-2" style="font-size: 0.9rem;">
+											{% if set.importedAt %}
+												Imported on
+												{{ set.importedAt|date('d/m/Y') }}
+											{% endif %}
+										</p>
+
+										{% if set.setParts|length > 0 %}
+											{% set totalPieces = 0 %}
+											{% for part in set.setParts %}
+												{% set totalPieces = totalPieces + part.quantity %}
+											{% endfor %}
+											<div class="text-muted" style="font-size: 0.8rem;">
+												{{ totalPieces }}
+												part(s) -
+												{{ set.setParts|length }}
+												type(s)
+											</div>
+										{% endif %}
+									</div>
+								</div>
+
+								<div class="card-actions">
+									<a href="{{ path('app_set_show', {'id': set.id}) }}" class="btn btn-small btn-secondary">
+										View Details
+									</a>
+									{{ include('set/_delete_form.html.twig') }}
+								</div>
+							</div>
+						</div>
+					{% endfor %}
+				</div>
+			{% else %}
+				<div class="card">
+					<div class="card-body text-center">
+						{% if search %}
+							<h3>
+								No results found
+							</h3>
+							<p class="text-muted">No set matches your search "{{ search }}"</p>
+							<a href="{{ path('app_set_index') }}" class="btn">
+								View all sets
+							</a>
+						{% else %}
+							<h3>
+								No sets in your inventory
+							</h3>
+							<p class="text-muted mb-3">Start by importing your first LEGO set from Rebrickable</p>
+							<div style="max-width: 300px; margin: 0 auto;">
+								<form method="GET" action="#" onsubmit="importSet(event)">
+									<input type="text" placeholder="Set number (e.g. 75192-1)" class="form-input mb-2" required id="setNumInputEmpty">
+									<button type="submit" class="btn btn-primary" style="width: 100%;">
+										Import from Rebrickable
+									</button>
+								</form>
+							</div>
+						{% endif %}
+					</div>
+				</div>
+			{% endif %}
+		</div>
+	</div>
+
+	<script>
+		function importSet(event) {
+event.preventDefault();
+const setNumInput = event.target.querySelector('input[type="text"]');
+const setNum = setNumInput.value.trim();
+if (setNum) {
+window.location.href = `/set/import/${setNum}`;
+}
+}
+	</script>
+{% endblock %}

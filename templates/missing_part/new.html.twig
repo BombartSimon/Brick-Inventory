@@ -1,0 +1,24 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}New Missing Part
+{% endblock %}
+
+{% block body %}
+	<div class="page-header">
+		<h1 class="page-title">
+			Add Missing Part
+		</h1>
+	</div>
+
+	<div class="card">
+		<div class="card-body">
+			{{ include('missing_part/_form.html.twig') }}
+		</div>
+	</div>
+
+	<div class="mt-3">
+		<a href="{{ path('app_missing_part_index') }}" class="btn btn-secondary">
+			Back to list
+		</a>
+	</div>
+{% endblock %}

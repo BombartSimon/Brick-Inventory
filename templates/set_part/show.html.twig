@@ -1,0 +1,42 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}SetPart{% endblock %}
+
+{% block body %}
+    <h1>SetPart</h1>
+
+    <table class="table">
+        <tbody>
+            <tr>
+                <th>Id</th>
+                <td>{{ set_part.id }}</td>
+            </tr>
+            <tr>
+                <th>PartNum</th>
+                <td>{{ set_part.partNum }}</td>
+            </tr>
+            <tr>
+                <th>PartName</th>
+                <td>{{ set_part.partName }}</td>
+            </tr>
+            <tr>
+                <th>ColorId</th>
+                <td>{{ set_part.colorId }}</td>
+            </tr>
+            <tr>
+                <th>Quantity</th>
+                <td>{{ set_part.quantity }}</td>
+            </tr>
+            <tr>
+                <th>ImageUrl</th>
+                <td>{{ set_part.imageUrl }}</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <a href="{{ path('app_set_part_index') }}">back to list</a>
+
+    <a href="{{ path('app_set_part_edit', {'id': set_part.id}) }}">edit</a>
+
+    {{ include('set_part/_delete_form.html.twig') }}
+{% endblock %}

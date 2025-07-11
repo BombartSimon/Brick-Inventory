@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html lang="fr">
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<title>
+			{% block title %}LEGO Inventory
+			{% endblock %}
+		</title>
+		<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 128 128%22><text y=%221.2em%22 font-size=%2296%22>🧱</text></svg>">
+		<style>
+			* {
+				margin: 0;
+				padding: 0;
+				box-sizing: border-box;
+			}
+
+			body {
+				font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+				background-color: #f8f9fa;
+				color: #212529;
+				line-height: 1.6;
+			}
+
+			/* === HEADER === */
+			.header {
+				background-color: #000;
+				color: white;
+				padding: 1.2rem 0;
+				box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+			}
+
+			.header-content {
+				max-width: 1200px;
+				margin: 0 auto;
+				padding: 0 1rem;
+				display: flex;
+				justify-content: space-between;
+				align-items: center;
+			}
+
+			.logo {
+				font-size: 1.5rem;
+				font-weight: bold;
+				text-decoration: none;
+				color: white;
+				display: flex;
+				align-items: center;
+				gap: 0.5rem;
+			}
+
+			.nav {
+				display: flex;
+				gap: 2rem;
+			}
+
+			.nav a {
+				color: white;
+				text-decoration: none;
+				padding: 0.5rem 1rem;
+				border-radius: 4px;
+				transition: background-color 0.3s;
+				display: flex;
+				align-items: center;
+				gap: 0.3rem;
+			}
+
+			.nav a:hover {
+				background-color: rgba(255, 255, 255, 0.1);
+			}
+
+			/* === LAYOUT === */
+			.container {
+				max-width: 1200px;
+				margin: 0 auto;
+				padding: 2rem 1rem;
+			}
+
+			.page-header {
+				display: flex;
+				justify-content: space-between;
+				align-items: center;
+				margin-bottom: 2rem;
+				flex-wrap: wrap;
+				gap: 1rem;
+			}
+
+			.page-title {
+				font-size: 2rem;
+				font-weight: 600;
+				color: #212529;
+				margin: 0;
+				display: flex;
+				align-items: center;
+				gap: 0.5rem;
+			}
+
+			/* === SEARCH === */
+			.search-bar {
+				background: white;
+				padding: 1.5rem;
+				border-radius: 8px;
+				box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+				margin-bottom: 2rem;
+				border: 1px solid #e9ecef;
+			}
+
+			.search-input,
+			.form-input {
+				width: 100%;
+				padding: 1rem;
+				border: 2px solid #dee2e6;
+				border-radius: 6px;
+				font-size: 1rem;
+				transition: all 0.3s ease;
+				background: white;
+			}
+
+			.search-input:focus,
+			.form-input:focus {
+				outline: none;
+				border-color: #000;
+				box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.1);
+			}
+
+			/* === BUTTONS === */
+			.btn {
+				display: inline-flex;
+				align-items: center;
+				gap: 0.5rem;
+				padding: 0.75rem 1.5rem;
+				background-color: #000;
+				color: white;
+				text-decoration: none;
+				border-radius: 6px;
+				border: none;
+				cursor: pointer;
+				font-size: 0.9rem;
+				font-weight: 500;
+				transition: all 0.3s ease;
+				margin: 0.25rem;
+			}
+
+			.btn:hover {
+				background-color: #333;
+				transform: translateY(-1px);
+				box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+				color: white;
+				text-decoration: none;
+			}
+
+			.btn-primary {
+				background-color: #007bff;
+			}
+
+			.btn-primary:hover {
+				background-color: #0056b3;
+			}
+
+			.btn-secondary {
+				background-color: #6c757d;
+			}
+
+			.btn-secondary:hover {
+				background-color: #545b62;
+			}
+
+			.btn-danger {
+				background-color: #dc3545;
+			}
+
+			.btn-danger:hover {
+				background-color: #c82333;
+			}
+
+			.btn-small {
+				padding: 0.5rem 1rem !important;
+				font-size: 0.8rem !important;
+			}
+
+			.btn-group {
+				display: flex;
+				gap: 0.5rem;
+				flex-wrap: wrap;
+			}
+
+			/* === CARDS === */
+			.card {
+				background: white;
+				border-radius: 8px;
+				box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+				overflow: hidden;
+				margin-bottom: 1.5rem;
+				border: 1px solid #e9ecef;
+				transition: all 0.3s ease;
+			}
+
+			.card:hover {
+				transform: translateY(-2px);
+				box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+			}
+
+			.card-header {
+				background-color: #f8f9fa;
+				padding: 1.2rem;
+				border-bottom: 1px solid #e9ecef;
+				font-weight: 600;
+				color: #212529;
+			}
+
+			.card-body {
+				padding: 1.5rem;
+			}
+
+			.card-content {
+				display: flex;
+				gap: 1rem;
+				align-items: flex-start;
+			}
+
+			.card-actions {
+				display: flex;
+				gap: 0.5rem;
+				flex-wrap: wrap;
+				margin-top: 1rem;
+			}
+
+			/* === GRID === */
+			.grid {
+				display: grid;
+				grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+				gap: 1.5rem;
+			}
+
+			.stats-grid {
+				display: grid;
+				grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+				gap: 1.5rem;
+				margin-bottom: 2rem;
+			}
+
+			/* === TABLES === */
+			.table-container {
+				background: white;
+				border-radius: 8px;
+				overflow: hidden;
+				box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+				border: 1px solid #e9ecef;
+			}
+
+			.table {
+				width: 100%;
+				border-collapse: collapse;
+				margin: 0;
+			}
+
+			.table th,
+			.table td {
+				padding: 1rem;
+				text-align: left;
+				border-bottom: 1px solid #e9ecef;
+			}
+
+			.table th {
+				background-color: #f8f9fa;
+				font-weight: 600;
+				color: #495057;
+			}
+
+			.table tbody tr:hover {
+				background-color: #f8f9fa;
+			}
+
+			.table tbody tr:last-child td {
+				border-bottom: none;
+			}
+
+			/* === IMAGES === */
+			.set-image {
+				width: 80px;
+				height: 80px;
+				object-fit: cover;
+				border-radius: 4px;
+				flex-shrink: 0;
+			}
+
+			.set-image-large {
+				width: 200px;
+				height: 200px;
+				object-fit: cover;
+				border-radius: 8px;
+				flex-shrink: 0;
+			}
+
+			.part-image {
+				width: 40px;
+				height: 40px;
+				object-fit: cover;
+				border-radius: 4px;
+				flex-shrink: 0;
+			}
+
+			.image-placeholder {
+				background-color: #ecf0f1;
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				color: #95a5a6;
+				border-radius: 4px;
+			}
+
+			/* === BADGES === */
+			.badge {
+				display: inline-block;
+				padding: 0.25rem 0.75rem;
+				background-color: #e9ecef;
+				color: #495057;
+				border-radius: 12px;
+				font-size: 0.8rem;
+				font-weight: 500;
+				margin: 0.125rem;
+			}
+
+			.badge-primary {
+				background-color: #007bff;
+				color: white;
+			}
+
+			.badge-success {
+				background-color: #28a745;
+				color: white;
+			}
+
+			.badge-danger {
+				background-color: #dc3545;
+				color: white;
+			}
+
+			.badge-warning {
+				background-color: #ffc107;
+				color: #212529;
+			}
+
+			.badge-info {
+				background-color: #17a2b8;
+				color: white;
+			}
+
+			/* === UTILITIES === */
+			.text-muted {
+				color: #6c757d;
+			}
+
+			.text-center {
+				text-align: center;
+			}
+
+			.text-right {
+				text-align: right;
+			}
+
+			.mb-2 {
+				margin-bottom: 1rem;
+			}
+
+			.mb-3 {
+				margin-bottom: 1.5rem;
+			}
+
+			.mt-2 {
+				margin-top: 1rem;
+			}
+
+			.mt-3 {
+				margin-top: 1.5rem;
+			}
+
+			.flex {
+				display: flex;
+			}
+
+			.flex-between {
+				display: flex;
+				justify-content: space-between;
+				align-items: center;
+			}
+
+			.flex-wrap {
+				flex-wrap: wrap;
+			}
+
+			.gap-1 {
+				gap: 0.5rem;
+			}
+
+			.gap-2 {
+				gap: 1rem;
+			}
+
+			.stat-number {
+				font-size: 2rem;
+				font-weight: bold;
+				color: #007bff;
+			}
+
+			.stat-label {
+				font-size: 0.9rem;
+				color: #6c757d;
+				margin-top: 0.25rem;
+			}
+
+			/* === FORMS === */
+			.form-group {
+				margin-bottom: 1.5rem;
+			}
+
+			.form-label {
+				display: block;
+				margin-bottom: 0.5rem;
+				font-weight: 500;
+				color: #212529;
+			}
+
+			.form-actions {
+				display: flex;
+				gap: 1rem;
+				justify-content: flex-end;
+				flex-wrap: wrap;
+				margin-top: 2rem;
+			}
+
+			/* === RESPONSIVE === */
+			@media(max-width: 768px) {
+				.container {
+					padding: 1rem;
+				}
+
+				.page-header {
+					flex-direction: column;
+					align-items: stretch;
+				}
+
+				.grid {
+					grid-template-columns: 1fr;
+				}
+
+				.stats-grid {
+					grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+				}
+
+				.card-content {
+					flex-direction: column;
+				}
+
+				.set-image-large {
+					width: 100%;
+					max-width: 200px;
+					height: 200px;
+				}
+			}
+
+			/* === ICONS === */
+			.ux-icon {
+				width: 0.6rem;
+				height: 0.6rem;
+				display: inline-block;
+				vertical-align: middle;
+				fill: currentColor;
+				flex-shrink: 0;
+			}
+
+			.btn .ux-icon {
+				width: 0.5rem;
+				height: 0.5rem;
+			}
+
+			.btn-small .ux-icon {
+				width: 0.45rem;
+				height: 0.45rem;
+			}
+
+			h1 .ux-icon,
+			.page-title .ux-icon {
+				width: 0.7rem;
+				height: 0.7rem;
+				margin-right: 0.3rem;
+			}
+
+			h2 .ux-icon,
+			h3 .ux-icon,
+			h4 .ux-icon {
+				width: 0.6rem;
+				height: 0.6rem;
+				margin-right: 0.25rem;
+			}
+
+			.logo .ux-icon {
+				width: 1rem;
+				height: 1rem;
+			}
+
+			.nav .ux-icon {
+				width: 0.5rem;
+				height: 0.5rem;
+				margin-right: 0.2rem;
+			}
+		</style>
+		{% block stylesheets %}{% endblock %}
+
+		{% block javascripts %}
+			{% block importmap %}
+				{{ importmap('app') }}
+			{% endblock %}
+		{% endblock %}
+	</head>
+	<body>
+		<header class="header">
+			<div class="header-content">
+				<a href="{{ path('app_set_index') }}" class="logo">
+					LEGO Inventory
+				</a>
+			</div>
+		</header>
+
+		<main class="container"> {% block body %}{% endblock %}
+			</main>
+		</body>
+	</html>

@@ -1,0 +1,25 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Edit Set
+{% endblock %}
+
+{% block body %}
+	<div class="page-header">
+		<h1 class="page-title">
+			Edit Set
+		</h1>
+	</div>
+
+	<div class="card">
+		<div class="card-body">
+			{{ include('set/_form.html.twig', {'button_label': 'Update'}) }}
+		</div>
+	</div>
+
+	<div class="flex-between mt-3">
+		<a href="{{ path('app_set_index') }}" class="btn btn-secondary">
+			Back to list
+		</a>
+		{{ include('set/_delete_form.html.twig') }}
+	</div>
+{% endblock %}

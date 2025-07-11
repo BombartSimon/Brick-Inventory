@@ -1,0 +1,43 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}SetPart index{% endblock %}
+
+{% block body %}
+    <h1>SetPart index</h1>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>PartNum</th>
+                <th>PartName</th>
+                <th>ColorId</th>
+                <th>Quantity</th>
+                <th>ImageUrl</th>
+                <th>actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for set_part in set_parts %}
+            <tr>
+                <td>{{ set_part.id }}</td>
+                <td>{{ set_part.partNum }}</td>
+                <td>{{ set_part.partName }}</td>
+                <td>{{ set_part.colorId }}</td>
+                <td>{{ set_part.quantity }}</td>
+                <td>{{ set_part.imageUrl }}</td>
+                <td>
+                    <a href="{{ path('app_set_part_show', {'id': set_part.id}) }}">show</a>
+                    <a href="{{ path('app_set_part_edit', {'id': set_part.id}) }}">edit</a>
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="7">no records found</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <a href="{{ path('app_set_part_new') }}">Create new</a>
+{% endblock %}

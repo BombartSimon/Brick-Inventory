@@ -1,0 +1,11 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}New SetPart{% endblock %}
+
+{% block body %}
+    <h1>Create new SetPart</h1>
+
+    {{ include('set_part/_form.html.twig') }}
+
+    <a href="{{ path('app_set_part_index') }}">back to list</a>
+{% endblock %}

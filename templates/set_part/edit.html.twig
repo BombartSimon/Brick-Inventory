@@ -1,0 +1,13 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Edit SetPart{% endblock %}
+
+{% block body %}
+    <h1>Edit SetPart</h1>
+
+    {{ include('set_part/_form.html.twig', {'button_label': 'Update'}) }}
+
+    <a href="{{ path('app_set_part_index') }}">back to list</a>
+
+    {{ include('set_part/_delete_form.html.twig') }}
+{% endblock %}

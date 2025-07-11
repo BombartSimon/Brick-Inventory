@@ -1,0 +1,162 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}
+	{{ set.name }}
+	- LEGO Inventory
+{% endblock %}
+
+{% block body %}
+	<!-- Set header -->
+	<div class="card mb-3">
+		<div class="card-body">
+			<div class="card-content">
+				{% if set.imageUrl %}
+					<img src="{{ set.imageUrl }}" alt="{{ set.name }}" class="set-image-large">
+				{% else %}
+					<div class="set-image-large image-placeholder" style="font-size: 3rem;">
+						🧱
+					</div>
+				{% endif %}
+
+				<div style="flex: 1;">
+					<h1 class="page-title mb-3">{{ set.name }}</h1>
+
+					<div class="mb-3">
+						<span class="badge badge-primary" style="font-size: 1rem; padding: 0.5rem 1rem;">{{ set.setNum }}</span>
+						{% if set.year %}
+							<span class="badge" style="font-size: 1rem; padding: 0.5rem 1rem;">{{ set.year }}</span>
+						{% endif %}
+					</div>
+
+					<div class="stats-grid mb-3">
+						<div>
+							<div class="stat-number" style="font-size: 1.5rem;">{{ set.setParts|length }}</div>
+							<div class="stat-label">Parts</div>
+						</div>
+						<div>
+							<div class="stat-number" style="font-size: 1.5rem; color: #dc3545;">{{ missing_parts|length }}</div>
+							<div class="stat-label">Missing</div>
+						</div>
+						{% if set.importedAt %}
+							<div>
+								<div style="font-size: 1rem; color: #28a745; font-weight: 600;">{{ set.importedAt|date('d/m/Y') }}</div>
+								<div class="stat-label">Imported</div>
+							</div>
+						{% endif %}
+					</div>
+
+					<div class="btn-group">
+						<a href="{{ path('app_set_index') }}" class="btn btn-secondary">
+							Back to Dashboard
+						</a>
+						<a href="{{ path('app_missing_part_new_for_set', {'id': set.id}) }}" class="btn btn-primary">
+							Add Missing Part
+						</a>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<!-- Missing parts -->
+	{% if missing_parts|length > 0 %}
+		<div class="card mb-3">
+			<div class="card-header" style="background-color: #fff3cd; color: #856404;">
+				<h2 style="margin: 0; font-size: 1.3rem;">
+					Missing Parts ({{ missing_parts|length }})
+				</h2>
+			</div>
+			<div class="card-body">
+				<div class="grid">
+					{% for missing_part in missing_parts %}
+						<div class="card" style="border-left: 4px solid #dc3545;">
+							<div class="card-body">
+								<div class="card-content">
+									{% if missing_part.part.imageUrl %}
+										<img src="{{ missing_part.part.imageUrl }}" alt="{{ missing_part.part.partName }}" class="part-image">
+									{% else %}
+										<div class="part-image image-placeholder" style="font-size: 0.8rem;">
+											?
+										</div>
+									{% endif %}
+
+									<div style="flex: 1;">
+										<h4 style="margin: 0 0 0.5rem 0; font-size: 1rem;">{{ missing_part.part.partName }}</h4>
+										<div class="mb-2">
+											<span class="badge">{{ missing_part.part.partNum }}</span>
+										</div>
+										<div>
+											<span class="badge badge-danger">{{ missing_part.quantity }}
+												missing</span>
+											<span class="badge">{{ missing_part.part.quantity }}
+												total</span>
+										</div>
+									</div>
+								</div>
+								<div class="card-actions">
+									<a href="{{ path('app_missing_part_edit', {'id': missing_part.id}) }}" class="btn btn-small btn-secondary">
+										Edit
+									</a>
+									{{ include('missing_part/_delete_form.html.twig', {missing_part: missing_part}) }}
+								</div>
+							</div>
+						</div>
+					{% endfor %}
+				</div>
+			</div>
+		</div>
+	{% endif %}
+
+	<!-- All set parts -->
+	<div class="card">
+		<div class="card-header">
+			<h2 style="margin: 0; font-size: 1.3rem;">
+				All Parts ({{ set.setParts|length }})
+			</h2>
+		</div>
+		<div class="card-body">
+			{% if set.setParts|length > 0 %}
+				<div class="grid">
+					{% for set_part in set.setParts %}
+						<div class="card">
+							<div class="card-body">
+								<div class="card-content">
+									{% if set_part.imageUrl %}
+										<img src="{{ set_part.imageUrl }}" alt="{{ set_part.partName }}" class="part-image">
+									{% else %}
+										<div class="part-image image-placeholder" style="font-size: 0.8rem;">
+											🧱
+										</div>
+									{% endif %}
+
+									<div style="flex: 1;">
+										<h4 style="margin: 0 0 0.5rem 0; font-size: 1rem;">{{ set_part.partName }}</h4>
+										<div class="mb-2">
+											<span class="badge">{{ set_part.partNum }}</span>
+											{% if set_part.colorId %}
+												<span class="badge">Color:
+													{{ set_part.colorId }}</span>
+											{% endif %}
+										</div>
+										<span class="badge badge-primary">{{ set_part.quantity }}
+											part(s)</span>
+									</div>
+								</div>
+							</div>
+						</div>
+					{% endfor %}
+				</div>
+			{% else %}
+				<div class="text-center" style="padding: 3rem;">
+					<h3 style="color: #6c757d;">No parts</h3>
+					<p class="text-muted">Part information is not available for this set.</p>
+				</div>
+			{% endif %}
+		</div>
+	</div>
+
+	<!-- Delete form -->
+	<div style="margin-top: 2rem; text-center;">
+		{{ include('set/_delete_form.html.twig') }}
+	</div>
+{% endblock %}

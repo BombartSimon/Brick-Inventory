@@ -1,0 +1,515 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Add Missing Part -
+	{{ set.name }}
+{% endblock %}
+
+{% block body %}
+	<div
+		style="max-width: 800px; margin: 0 auto;">
+		<!-- Header Section -->
+		<div class="mb-3">
+			<nav class="mb-2" style="font-size: 0.9rem;">
+				<a href="{{ path('app_set_index') }}" style="color: #6c757d; text-decoration: none;">
+					Dashboard
+				</a>
+				<span style="color: #6c757d; margin: 0 0.5rem;">></span>
+				<a href="{{ path('app_set_show', {'id': set.id}) }}" style="color: #6c757d; text-decoration: none;">{{ set.name }}</a>
+				<span style="color: #6c757d; margin: 0 0.5rem;">></span>
+				<span>Add Missing Part</span>
+			</nav>
+
+			<h1 class="page-title">
+				Add Missing Part
+			</h1>
+			<p class="text-muted">Mark parts as missing from
+				<strong>{{ set.name }}</strong>
+			</p>
+		</div>
+
+		<!-- Set Info Card -->
+		<div class="card mb-3">
+			<div class="card-body">
+				<div class="card-content">
+					{% if set.imageUrl %}
+						<img src="{{ set.imageUrl }}" alt="{{ set.name }}" class="set-image">
+					{% else %}
+						<div class="set-image image-placeholder">
+							🧱
+						</div>
+					{% endif %}
+					<div style="flex: 1;">
+						<h3>{{ set.name }}</h3>
+						<div class="mt-2">
+							<span class="badge badge-primary">{{ set.setNum }}</span>
+							{% if set.year %}
+								<span class="badge">{{ set.year }}</span>
+							{% endif %}
+							<span class="badge">{{ set.setParts|length }}
+								parts</span>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<!-- Form Container -->
+		<div class="form-container" data-controller="missing-part-form">
+			{{ form_start(form, {'attr': {'class': 'missing-part-form'}}) }}
+
+			<!-- Part Selection -->
+			<div class="form-section">
+				<div class="section-title">
+					{{ ux_icon('heroicons:puzzle-piece', {width: '20px', height: '20px'}) }}
+					Select Part
+				</div>
+
+				<div class="part-selector" data-missing-part-form-target="partSelector">
+					{{ form_label(form.part, 'Which part is missing?', {'label_attr': {'class': 'form-label'}}) }}
+
+					<!-- Search Box -->
+					<div class="search-container">
+						<input type="text" placeholder="Search parts by name or number..." class="search-input" data-missing-part-form-target="searchInput" data-action="input->missing-part-form#filterParts">
+						<div class="search-icon">
+							{{ ux_icon('heroicons:magnifying-glass', {width: '16px', height: '16px'}) }}
+						</div>
+					</div>
+
+					<!-- Enhanced Select -->
+					<div class="select-wrapper" data-missing-part-form-target="selectWrapper">
+						{{ form_widget(form.part, {
+						'attr': {
+							'class': 'form-select part-select',
+							'data-action': 'change->missing-part-form#onPartChange',
+							'data-missing-part-form-target': 'partSelect'
+						}
+					}) }}
+						<div class="select-arrow">
+							{{ ux_icon('heroicons:chevron-down', {width: '16px', height: '16px'}) }}
+						</div>
+					</div>
+
+					{{ form_errors(form.part) }}
+
+					<!-- Part Preview -->
+					<div class="part-preview" data-missing-part-form-target="partPreview" style="display: none;">
+						<div class="part-preview-content">
+							<div class="part-icon">
+								{{ ux_icon('heroicons:puzzle-piece', {width: '24px', height: '24px'}) }}
+							</div>
+							<div class="part-info">
+								<h4 data-missing-part-form-target="previewName">Part Name</h4>
+								<div class="part-badges">
+									<span class="badge" data-missing-part-form-target="previewPartNum">#12345</span>
+									<span class="badge badge-primary" data-missing-part-form-target="previewQuantity">Qty: 0</span>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<!-- Quantity Selection -->
+			<div class="form-section">
+				<div class="section-title">
+					{{ ux_icon('heroicons:calculator', {width: '20px', height: '20px'}) }}
+					Missing Quantity
+				</div>
+
+				<div class="quantity-selector">
+					{{ form_label(form.quantity, 'How many are missing?', {'label_attr': {'class': 'form-label'}}) }}
+
+					<div class="quantity-controls">
+						<button type="button" class="quantity-btn" data-action="click->missing-part-form#decreaseQuantity">
+							{{ ux_icon('heroicons:minus', {width: '16px', height: '16px'}) }}
+						</button>
+
+						{{ form_widget(form.quantity, {
+						'attr': {
+							'class': 'quantity-input',
+							'data-missing-part-form-target': 'quantityInput',
+							'data-action': 'input->missing-part-form#validateQuantity',
+							'min': '1'
+						}
+					}) }}
+
+						<button type="button" class="quantity-btn" data-action="click->missing-part-form#increaseQuantity">
+							{{ ux_icon('heroicons:plus', {width: '16px', height: '16px'}) }}
+						</button>
+					</div>
+
+					{{ form_errors(form.quantity) }}
+
+					<!-- Validation Message -->
+					<div class="quantity-feedback" data-missing-part-form-target="quantityFeedback" style="display: none;">
+						<span data-missing-part-form-target="feedbackMessage"></span>
+					</div>
+				</div>
+			</div>
+
+			<!-- Actions -->
+			<div class="form-actions">
+				<button type="submit" class="btn btn-primary btn-submit" data-missing-part-form-target="submitBtn">
+					{{ ux_icon('heroicons:plus-circle', {width: '16px', height: '16px'}) }}
+					Add Missing Part
+				</button>
+				<a href="{{ path('app_set_show', {'id': set.id}) }}" class="btn btn-secondary">
+					{{ ux_icon('heroicons:arrow-left', {width: '16px', height: '16px'}) }}
+					Cancel
+				</a>
+			</div>
+
+			{{ form_end(form) }}
+		</div>
+	</div>
+
+	<style>
+		.container {
+			padding: 0 1rem;
+		}
+
+		.header-section {
+			margin-bottom: 2rem;
+		}
+
+		.breadcrumb-nav {
+			display: flex;
+			align-items: center;
+			gap: 0.5rem;
+			margin-bottom: 1rem;
+			font-size: 0.9rem;
+		}
+
+		.breadcrumb-link {
+			color: #6c757d;
+			text-decoration: none;
+			display: flex;
+			align-items: center;
+			gap: 0.25rem;
+			transition: color 0.2s;
+		}
+
+		.breadcrumb-link:hover {
+			color: #000;
+		}
+
+		.breadcrumb-separator {
+			color: #6c757d;
+			display: flex;
+			align-items: center;
+		}
+
+		.breadcrumb-current {
+			color: #000;
+			font-weight: 500;
+		}
+
+		.page-title {
+			display: flex;
+			align-items: center;
+			gap: 0.75rem;
+			margin: 0 0 0.5rem;
+			font-size: 2rem;
+			font-weight: 600;
+			color: #2c3e50;
+		}
+
+		.page-subtitle {
+			color: #6c757d;
+			margin: 0;
+			font-size: 1.1rem;
+		}
+
+		.set-info-card {
+			background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+			border-radius: 12px;
+			padding: 1.5rem;
+			margin-bottom: 2rem;
+			color: white;
+		}
+
+		.set-info-content {
+			display: flex;
+			align-items: center;
+			gap: 1rem;
+		}
+
+		.set-thumbnail {
+			width: 80px;
+			height: 80px;
+			border-radius: 8px;
+			object-fit: cover;
+			border: 2px solid rgba(255, 255, 255, 0.2);
+		}
+
+		.set-thumbnail.placeholder {
+			background: rgba(255, 255, 255, 0.1);
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			color: rgba(255, 255, 255, 0.8);
+		}
+
+		.set-details h3 {
+			margin: 0 0 0.5rem;
+			font-size: 1.25rem;
+			font-weight: 600;
+		}
+
+		.set-meta {
+			display: flex;
+			gap: 0.5rem;
+			flex-wrap: wrap;
+		}
+
+		.set-meta .badge {
+			background: rgba(255, 255, 255, 0.2);
+			color: white;
+			border: 1px solid rgba(255, 255, 255, 0.3);
+		}
+
+		.set-meta .badge-primary {
+			background: rgba(255, 255, 255, 0.9);
+			color: #667eea;
+		}
+
+		.form-container {
+			background: white;
+			border-radius: 12px;
+			box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+			overflow: hidden;
+		}
+
+		.form-section {
+			padding: 2rem;
+			border-bottom: 1px solid #e9ecef;
+		}
+
+		.form-section:last-child {
+			border-bottom: none;
+		}
+
+		.section-title {
+			display: flex;
+			align-items: center;
+			gap: 0.5rem;
+			font-size: 1.25rem;
+			font-weight: 600;
+			color: #2c3e50;
+			margin-bottom: 1.5rem;
+		}
+
+		.search-container {
+			position: relative;
+			margin-bottom: 1rem;
+		}
+
+		.search-input {
+			width: 100%;
+			padding: 0.75rem 1rem 0.75rem 2.5rem;
+			border: 2px solid #dee2e6;
+			border-radius: 8px;
+			font-size: 1rem;
+			transition: all 0.3s ease;
+		}
+
+		.search-input:focus {
+			outline: none;
+			border-color: #000;
+			box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.1);
+		}
+
+		.search-icon {
+			position: absolute;
+			left: 0.75rem;
+			top: 50%;
+			transform: translateY(-50%);
+			color: #6c757d;
+		}
+
+		.select-wrapper {
+			position: relative;
+		}
+
+		.part-select {
+			appearance: none;
+			width: 100%;
+			padding: 0.75rem 2.5rem 0.75rem 0.75rem;
+			border: 2px solid #dee2e6;
+			border-radius: 8px;
+			font-size: 1rem;
+			background: white;
+			transition: all 0.3s ease;
+		}
+
+		.part-select:focus {
+			outline: none;
+			border-color: #000;
+			box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.1);
+		}
+
+		.select-arrow {
+			position: absolute;
+			right: 0.75rem;
+			top: 50%;
+			transform: translateY(-50%);
+			pointer-events: none;
+			color: #6c757d;
+		}
+
+		.part-preview {
+			margin-top: 1rem;
+			padding: 1rem;
+			background: #f8f9fa;
+			border: 1px solid #dee2e6;
+			border-radius: 8px;
+			animation: slideIn 0.3s ease;
+		}
+
+		@keyframes slideIn {
+			from {
+				opacity: 0;
+				transform: translateY(-10px);
+			}
+			to {
+				opacity: 1;
+				transform: translateY(0);
+			}
+		}
+
+		.part-preview-content {
+			display: flex;
+			align-items: center;
+			gap: 1rem;
+		}
+
+		.part-icon {
+			width: 48px;
+			height: 48px;
+			background: white;
+			border-radius: 8px;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			color: #6c757d;
+			border: 1px solid #dee2e6;
+		}
+
+		.part-info h4 {
+			margin: 0 0 0.5rem;
+			font-size: 1rem;
+			color: #2c3e50;
+		}
+
+		.part-badges {
+			display: flex;
+			gap: 0.5rem;
+		}
+
+		.quantity-controls {
+			display: flex;
+			align-items: center;
+			border: 2px solid #dee2e6;
+			border-radius: 8px;
+			overflow: hidden;
+			width: fit-content;
+			margin-bottom: 1rem;
+		}
+
+		.quantity-btn {
+			background: #f8f9fa;
+			border: none;
+			padding: 0.75rem;
+			color: #6c757d;
+			cursor: pointer;
+			transition: all 0.2s ease;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+		}
+
+		.quantity-btn:hover {
+			background: #e9ecef;
+			color: #2c3e50;
+		}
+
+		.quantity-input {
+			border: none;
+			padding: 0.75rem 1rem;
+			text-align: center;
+			font-size: 1.1rem;
+			font-weight: 600;
+			width: 80px;
+			background: white;
+		}
+
+		.quantity-input:focus {
+			outline: none;
+		}
+
+		.quantity-feedback {
+			padding: 0.5rem;
+			border-radius: 6px;
+			font-size: 0.9rem;
+			transition: all 0.3s ease;
+		}
+
+		.quantity-feedback.success {
+			background: #d4edda;
+			color: #155724;
+			border: 1px solid #c3e6cb;
+		}
+
+		.quantity-feedback.warning {
+			background: #fff3cd;
+			color: #856404;
+			border: 1px solid #ffeaa7;
+		}
+
+		.quantity-feedback.error {
+			background: #f8d7da;
+			color: #721c24;
+			border: 1px solid #f5c6cb;
+		}
+
+		.form-actions {
+			padding: 1.5rem 2rem;
+			background: #f8f9fa;
+			display: flex;
+			gap: 1rem;
+			justify-content: flex-end;
+		}
+
+		.btn-submit {
+			min-width: 160px;
+		}
+
+		@media(max-width: 768px) {
+			.container {
+				margin: 1rem auto;
+			}
+
+			.form-section {
+				padding: 1.5rem;
+			}
+
+			.set-info-content {
+				flex-direction: column;
+				text-align: center;
+			}
+
+			.part-preview-content {
+				flex-direction: column;
+				text-align: center;
+			}
+
+			.form-actions {
+				flex-direction: column-reverse;
+			}
+
+			.breadcrumb-nav {
+				flex-wrap: wrap;
+			}
+		}
+	</style>
+{% endblock %}

@@ -1,0 +1,114 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Missing Parts
+{% endblock %}
+
+{% block body %}
+	<div class="page-header">
+		<h1 class="page-title">
+			Missing Parts
+		</h1>
+		<a href="{{ path('app_missing_part_new') }}" class="btn btn-primary">
+			Add Missing Part
+		</a>
+	</div>
+
+	{% if missing_parts|length > 0 %}
+		<div class="table-container">
+			<table class="table">
+				<thead>
+					<tr>
+						<th>Set</th>
+						<th>Part</th>
+						<th>Part Name</th>
+						<th>Missing Quantity</th>
+						<th>Total in Set</th>
+						<th>Actions</th>
+					</tr>
+				</thead>
+				<tbody>
+					{% for missing_part in missing_parts %}
+						<tr>
+							<td>
+								<a href="{{ path('app_set_show', {'id': missing_part.part.set.id}) }}" class="text-decoration-none">
+									{{ missing_part.part.set.name }}
+								</a>
+							</td>
+							<td>
+								{% if missing_part.part.imageUrl %}
+									<img src="{{ missing_part.part.imageUrl }}" alt="{{ missing_part.part.partName }}" class="part-image">
+								{% else %}
+									<div class="part-image image-placeholder" style="font-size: 0.7rem;">🧱</div>
+								{% endif %}
+							</td>
+							<td>
+								<strong>{{ missing_part.part.partName }}</strong><br>
+								<span class="badge">{{ missing_part.part.partNum }}</span>
+							</td>
+							<td>
+								<span class="badge badge-danger">{{ missing_part.quantity }}</span>
+							</td>
+							<td>
+								<span class="badge">{{ missing_part.part.quantity }}</span>
+							</td>
+							<td>
+								<div class="btn-group">
+									<a href="{{ path('app_missing_part_show', {'id': missing_part.id}) }}" class="btn btn-small">
+										View
+									</a>
+									<a href="{{ path('app_missing_part_edit', {'id': missing_part.id}) }}" class="btn btn-small btn-secondary">
+										Edit
+									</a>
+									{{ include('missing_part/_delete_form.html.twig') }}
+								</div>
+							</td>
+						</tr>
+					{% endfor %}
+				</tbody>
+			</table>
+		</div>
+	{% else %}
+		<div class="card">
+			<div class="card-body text-center">
+				<h3>
+					No missing parts
+				</h3>
+				<p class="text-muted mb-3">Great! You have all the parts for your LEGO sets.</p>
+				<a href="{{ path('app_set_index') }}" class="btn">
+					Back to Dashboard
+				</a>
+			</div>
+		</div>
+	{% endif %}
+{% endblock %}
+<td>
+	<a href="{{ path('app_set_show', {'id': missing_part.part.set.id}) }}" class="text-decoration-none">
+		{{ missing_part.part.set.name }}<br>
+		<small class="text-muted">{{ missing_part.part.set.setNum }}</small>
+	</a>
+</td>
+<td>
+	{% if missing_part.part.imageUrl %}
+		<img src="{{ missing_part.part.imageUrl }}" alt="{{ missing_part.part.partName }}" style="width: 50px; height: 50px; object-fit: cover;" class="rounded">
+	{% else %}
+		<div class="bg-light rounded d-flex align-items-center justify-content-center" style="width: 50px; height: 50px;">
+			<small class="text-muted">No img</small>
+		</div>
+	{% endif %}
+</td>
+<td>
+	<strong>{{ missing_part.part.partName }}</strong><br>
+	<small class="text-muted">Part #{{ missing_part.part.partNum }}</small>
+</td>
+<td>
+	<span class="badge bg-warning text-dark fs-6">{{ missing_part.quantity }}</span>
+</td>
+<td>
+	<span class="badge bg-info fs-6">{{ missing_part.part.quantity }}</span>
+</td>
+<td>
+	<div class="btn-group btn-group-sm">
+		<a href="{{ path('app_missing_part_show', {'id': missing_part.id}) }}" class="btn btn-outline-primary">View</a>
+		<a href="{{ path('app_missing_part_edit', {'id': missing_part.id}) }}" class="btn btn-outline-secondary">Edit</a>
+	</div>
+</td></tr>{% endfor %}</tbody></table></div></div>{% else %}<div class="card"><div class="card-body text-center py-5"><i class="bi bi-check-circle-fill text-success" style="font-size: 4rem;"></i><h3 class="mt-3">No Missing Parts!</h3><p class="text-muted">All your LEGO sets are complete, or no missing parts have been recorded yet.</p><a href="{{ path('app_missing_part_new') }}" class="btn btn-primary">Add Missing Part</a></div></div>{% endif %}</div>{% endblock %}
